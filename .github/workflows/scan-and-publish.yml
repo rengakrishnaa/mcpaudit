@@ -1,0 +1,108 @@
+# The whole deployment. Runs on GitHub's free tier, on a schedule, and
+# publishes to GitHub Pages.
+#
+# Why this is free forever, unlike a web service on a free hosting tier:
+#   * nothing runs between scans, so there is nothing to keep warm or to bill
+#   * GitHub Pages has no cold start, no sleep and no expiry date
+#   * the "database" is a file in this repository, committed by this job, so
+#     there is no managed Postgres to expire after 90 days
+#   * public repositories get unlimited Actions minutes
+#
+# The cost of that: the site is a snapshot, not a live query. Fine, because
+# the value is history, and history is precomputed by definition.
+
+name: scan and publish
+
+on:
+  schedule:
+    - cron: "17 2 * * *"     # 02:17 UTC daily. Off the hour on purpose:
+                             # GitHub delays jobs scheduled at :00 under load.
+  workflow_dispatch:          # lets you run it by hand from the Actions tab
+    inputs:
+      use_registry:
+        description: "Also pull servers from the public MCP registry"
+        type: boolean
+        default: false
+      limit:
+        description: "Max servers to scan"
+        default: "40"
+
+permissions:
+  contents: write     # to commit the updated database
+  pages: write        # to deploy
+  id-token: write
+
+concurrency:
+  group: scan-and-publish
+  cancel-in-progress: false     # never interrupt a scan mid-write
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # The runner already has Docker. Every untrusted package is installed
+      # and run inside it — never on the runner itself. See mcpaudit/sandbox.py.
+      - name: Show Docker version
+        run: docker --version
+
+      - name: Scan the bundled examples
+        run: |
+          python -m mcpaudit scan \
+            --seed data/demo_servers.json \
+            --allow-local
+
+      - name: Scan real servers
+        continue-on-error: true     # one broken upstream package must not
+                                    # stop the site from publishing
+        run: |
+          python -m mcpaudit scan \
+            --seed data/seed_servers.json \
+            ${{ inputs.use_registry == true && '--registry' || '' }} \
+            --limit ${{ inputs.limit || 40 }} \
+            --install-timeout 300
+
+      - name: Clean up sandbox images
+        if: always()
+        run: python -m mcpaudit prune || true
+
+      - name: Export the git-diffable history
+        run: python -m mcpaudit export --out data/history.jsonl
+
+      - name: Build the static site
+        run: python -m mcpaudit site --out site
+
+      # This commit is the persistence layer. Without it the scanner has no
+      # memory between runs and MCP007 can never fire.
+      - name: Commit the updated database
+        run: |
+          git config user.name  "mcpaudit-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/mcpaudit.db data/history.jsonl
+          if git diff --staged --quiet; then
+            echo "nothing changed"
+          else
+            git commit -m "scan: $(date -u +%Y-%m-%d) [skip ci]"
+            git push
+          fi
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: scan
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,46 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # No `pip install -r requirements.txt` because there are no runtime
+      # dependencies. Only the test tooling is installed.
+      - name: Install dev tooling
+        run: pip install pytest ruff
+
+      - name: Lint
+        run: ruff check mcpaudit tests
+
+      - name: Test
+        run: pytest -q
+
+      # A green suite that never actually ran the product proves nothing.
+      # This exercises the real CLI path end to end.
+      - name: Smoke-test the CLI
+        run: |
+          python -m mcpaudit --db /tmp/ci.db demo --out /tmp/ci-site
+          test -f /tmp/ci-site/index.html
+          test -f /tmp/ci-site/api/index.json
+          python - <<'PY'
+          import json
+          data = json.load(open("/tmp/ci-site/api/index.json"))
+          grades = {s["server_id"]: s["grade"] for s in data["servers"]}
+          assert grades["local:notes-benign"] == "A", grades
+          assert grades["local:weather-poisoned"] == "F", grades
+          print("CLI smoke test OK:", grades)
+          PY

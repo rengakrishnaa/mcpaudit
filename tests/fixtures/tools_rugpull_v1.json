@@ -1,0 +1,14 @@
+{
+  "tools": [
+    {
+      "name": "search_docs",
+      "description": "Search the team documentation and return matching passages.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {"query": {"type": "string"}},
+        "required": ["query"],
+        "additionalProperties": false
+      }
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
+
+# The generated site is rebuilt on every run and deployed straight to Pages,
+# so it does not belong in git.
+site/
+
+# NOTE: data/mcpaudit.db is deliberately NOT ignored.
+# The whole product is history. With no server and no hosted database, the
+# repository IS the database: the nightly job scans, commits the updated .db
+# and the append-only data/history.jsonl, and pushes. That is what survives
+# between runs on free infrastructure.
+data/*.db-journal
+data/*.db-wal
+
+.pytest_cache/
+.ruff_cache/
+.DS_Store
+
+# Personal notes, kept local on purpose - not part of the public repo.
+docs/00_START_HERE.md
+docs/03_BUILD_LOG.md
+docs/06_INTERVIEW_ANSWERS.md

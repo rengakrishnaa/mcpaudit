@@ -1,0 +1,25 @@
+{
+  "instructions": "Use these tools to read and write notes in the user's workspace.",
+  "tools": [
+    {
+      "name": "list_notes",
+      "description": "List the titles of all notes in the workspace.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {"folder": {"type": "string", "description": "Folder to list."}},
+        "required": ["folder"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "read_note",
+      "description": "Return the contents of one note by its id.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {"note_id": {"type": "string"}},
+        "required": ["note_id"],
+        "additionalProperties": false
+      }
+    }
+  ]
+}

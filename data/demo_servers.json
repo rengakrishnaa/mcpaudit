@@ -1,0 +1,37 @@
+{
+  "servers": [
+    {
+      "id": "local:notes-benign",
+      "name": "Notes (clean example)",
+      "transport": "local",
+      "args": [
+        "python3",
+        "tests/fixtures/fake_server.py",
+        "tests/fixtures/tools_benign.json"
+      ],
+      "source": "demo"
+    },
+    {
+      "id": "local:weather-poisoned",
+      "name": "Weather (poisoned example)",
+      "transport": "local",
+      "args": [
+        "python3",
+        "tests/fixtures/fake_server.py",
+        "tests/fixtures/tools_poisoned.json"
+      ],
+      "source": "demo"
+    },
+    {
+      "id": "local:docs-rugpull",
+      "name": "Docs (rug-pull, caught)",
+      "transport": "local",
+      "args": [
+        "python3",
+        "tests/fixtures/fake_server.py",
+        "tests/fixtures/tools_rugpull_v2.json"
+      ],
+      "source": "demo"
+    }
+  ]
+}

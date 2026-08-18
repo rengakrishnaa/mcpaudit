@@ -1,0 +1,69 @@
+{
+  "servers": [
+    {
+      "id": "npm:@modelcontextprotocol/server-filesystem",
+      "name": "Filesystem",
+      "transport": "stdio",
+      "runtime": "node",
+      "package": "@modelcontextprotocol/server-filesystem",
+      "args": ["/tmp"],
+      "source": "seed",
+      "homepage": "https://github.com/modelcontextprotocol/servers"
+    },
+    {
+      "id": "npm:@modelcontextprotocol/server-memory",
+      "name": "Memory",
+      "transport": "stdio",
+      "runtime": "node",
+      "package": "@modelcontextprotocol/server-memory",
+      "source": "seed",
+      "homepage": "https://github.com/modelcontextprotocol/servers"
+    },
+    {
+      "id": "npm:@modelcontextprotocol/server-everything",
+      "name": "Everything (reference server)",
+      "transport": "stdio",
+      "runtime": "node",
+      "package": "@modelcontextprotocol/server-everything",
+      "source": "seed",
+      "homepage": "https://github.com/modelcontextprotocol/servers"
+    },
+    {
+      "id": "npm:@modelcontextprotocol/server-sequential-thinking",
+      "name": "Sequential Thinking",
+      "transport": "stdio",
+      "runtime": "node",
+      "package": "@modelcontextprotocol/server-sequential-thinking",
+      "source": "seed",
+      "homepage": "https://github.com/modelcontextprotocol/servers"
+    },
+    {
+      "id": "pypi:mcp-server-git",
+      "name": "Git",
+      "transport": "stdio",
+      "runtime": "python",
+      "package": "mcp-server-git",
+      "args": ["mcp-server-git", "--repository", "/tmp"],
+      "source": "seed",
+      "homepage": "https://github.com/modelcontextprotocol/servers"
+    },
+    {
+      "id": "pypi:mcp-server-time",
+      "name": "Time",
+      "transport": "stdio",
+      "runtime": "python",
+      "package": "mcp-server-time",
+      "source": "seed",
+      "homepage": "https://github.com/modelcontextprotocol/servers"
+    },
+    {
+      "id": "pypi:mcp-server-fetch",
+      "name": "Fetch",
+      "transport": "stdio",
+      "runtime": "python",
+      "package": "mcp-server-fetch",
+      "source": "seed",
+      "homepage": "https://github.com/modelcontextprotocol/servers"
+    }
+  ]
+}
