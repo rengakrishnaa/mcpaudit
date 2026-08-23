@@ -164,6 +164,15 @@ needs to become dynamic.
 | [`docs/04_TESTING.md`](docs/04_TESTING.md) | What's tested and why |
 | [`docs/05_DEPLOYMENT.md`](docs/05_DEPLOYMENT.md) | Deploying it for free, step by step |
 
+## Related project
+
+[mcpaudit-guardian](https://github.com/rengakrishnaa/mcpaudit-guardian) — the live
+complement to this project. MCPAudit scans servers on a schedule and publishes a public,
+historical record, but it never touches real traffic. mcpaudit-guardian is a stdio proxy you
+drop into an actual MCP client config: it runs the same class of checks on every tool list
+and tool call as they happen, and can block a bad tool before the model or a real user ever
+sees it.
+
 ## Prior art and honest positioning
 
 [Snyk Agent Scan](https://github.com/snyk-labs/mcp-scan) (formerly `mcp-scan`) is the
